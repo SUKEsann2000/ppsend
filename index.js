@@ -168,9 +168,9 @@ setInterval(() => {
 
 function getColor(pp) {
   if (pp < 5) return 0x0000ff;
-  if (pp > 2000) pp = 2000;
+  if (pp > 50) pp = 50;
 
-  const ratio = (pp - 5) / (2000 - 5);
+  const ratio = (pp - 5) / (50 - 5);
 
   const colors = [
     0x0000ff, // blue
