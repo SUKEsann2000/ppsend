@@ -42,7 +42,7 @@
 Run the app:
 
 ```bash
-npm start
+npm run start
 ```
 
 Once running, `ppsend` will automatically:
