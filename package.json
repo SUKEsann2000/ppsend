@@ -13,8 +13,10 @@
   "type": "module",
   "dependencies": {
     "dotenv": "^17.2.3",
+    "extract-zip": "^2.0.1",
     "fs": "^0.0.1-security",
     "node-fetch": "^3.3.2",
+    "path": "^0.12.7",
     "ws": "^8.18.3"
   }
 }

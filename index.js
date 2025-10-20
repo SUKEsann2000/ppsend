@@ -10,7 +10,7 @@ let wscount = 0;
 // tosu.exeのパス
 const tosuPath = "./Tosu/tosu.exe";
 // tosu.exeを起動
-await start(tosuPath);
+start(tosuPath);
 console.log("Tosu was started!");
 
 // DiscordのWebhook URLを環境変数から取得
