@@ -30,7 +30,6 @@ const connectWS = () =>
     const tryConnect = () => {
       const ws = new WebSocket(process.env.WS_URL);
       wscount++;
-      console.log("wscount: ", wscount);
 
       ws.on("open", () => {
         console.log("WebSocket connected!");
@@ -75,8 +74,6 @@ tosuWS.on("message", async (msg) => {
 
   // Update the last heartbeat time
   newDate = Date.now();
-
-  console.log("last: ", lastStatus, " now: ", status)
 
   // When transitioning from playing (2) to results screen (7)
   if (lastStatus === 2 && status === 7) {
