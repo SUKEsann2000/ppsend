@@ -83,4 +83,4 @@ You can then set this shortcut to run before or alongside osu! to keep your PP u
 ## 🧾 License
 
 This project is licensed under the **MIT License**.
-`tOSU!` is © 2023–2025 Mikhail Babynichev (LGPL-3.0 licensed).
+[`tosu!`](https://github.com/tosuapp/tosu) is © 2023–2025 Mikhail Babynichev (LGPL-3.0 licensed).
