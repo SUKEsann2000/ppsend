@@ -196,5 +196,3 @@ function getColor(pp) {
 
   return (r << 16) | (g << 8) | b;
 }
-
-const color = getColor(pp);
