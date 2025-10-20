@@ -139,8 +139,6 @@ tosuWS.on("message", async (msg) => {
       ],
     };
 
-    console.log(embed)
-
     try {
       await fetch(webhook, {
         method: "POST",
