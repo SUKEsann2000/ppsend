@@ -85,17 +85,20 @@ tosuWS.on("message", async (msg) => {
     }
     webhookLock = true;
     const beatmap = data.beatmap;
-    const { artistUnicode, titleUnicode, version, mapper, set, id } = beatmap;
+    const { artistUnicode, titleUnicode, version, mapper, set, id, time } = beatmap;
     const { stars, bpm, ar, cs } = beatmap.stats;
     const { accuracy, playerName } = data.play;
     const { rank, maxCombo } = data.resultsScreen;
 
     const url = `https://osu.ppy.sh/beatmapsets/${set}#osu/${id}`;
-    const minutes = Math.floor(beatmap.time.mp3Length / 60);
-    const seconds = beatmap.time.mp3Length % 60;
+    //const minutes = Math.floor(beatmap.time.mp3Length / 60);
+    //const seconds = beatmap.time.mp3Length % 60;
+    const length = time.lastObject - time.firstObject;
+    const minutes = Math.floor(length / 60000);
+    const seconds = Math.floor((length % 60000) / 1000);
 
     // Change embed color based on PP
-    const color = pp < 15 ? 0x1abc9c : pp < 25 ? 0xd11a10 : 0x000000;
+    const color = getColor(pp);
 
     // Create the embed to send to Discord
     const embed = {
@@ -167,3 +170,31 @@ setInterval(() => {
     process.exit(1);
   }
 }, 1000); // Check every second
+
+function getColor(pp) {
+  if (pp < 5) return 0x0000ff;
+  if (pp > 2000) pp = 2000;
+
+  const ratio = (pp - 5) / (2000 - 5);
+
+  const colors = [
+    0x0000ff, // blue
+    0x00ff00, // green
+    0xffff00, // yellow
+    0xff8000, // orange
+    0xff0000  // red
+  ];
+
+  const index = ratio * (colors.length - 1);
+  const low = Math.floor(index);
+  const high = Math.ceil(index);
+  const t = index - low;
+
+  const r = ((colors[high] >> 16 & 0xff) * t + (colors[low] >> 16 & 0xff) * (1 - t)) | 0;
+  const g = ((colors[high] >> 8 & 0xff) * t + (colors[low] >> 8 & 0xff) * (1 - t)) | 0;
+  const b = ((colors[high] & 0xff) * t + (colors[low] & 0xff) * (1 - t)) | 0;
+
+  return (r << 16) | (g << 8) | b;
+}
+
+const color = getColor(pp);
