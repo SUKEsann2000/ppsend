@@ -28,10 +28,10 @@
    npm install
    ```
 
-3. Create a `.env` file in the project root:
+3. Rename `.env.template` to `.env` or Create a `.env` file in the project root:
 
    ```bash
-   DISCORD_WEBHOOK=https://discord.com/api/webhooks/your_webhook_url
+   DISCORD_WEBHOOK=https://discord.com/api/webhooks/xxxxx/yyyyy
    WS_URL=ws://127.0.0.1:24050/websocket/v2
    ```
 
