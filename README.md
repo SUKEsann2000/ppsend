@@ -1,19 +1,19 @@
-# 🎯 ppsend
+# ppsend
 
 **ppsend** is a lightweight Node.js tool that automatically sends your **osu! performance points (PP)** to a **Discord webhook**, using real-time data from the `tosu!` WebSocket server.
 
 ---
 
-## ✨ Features
+## Features
 
-* 🚀 **Automatic Tosu management** — downloads and keeps the `tosu!` binary up to date
-* 🎮 **Real-time osu! data** — reads your current PP and beatmap info live from the game
-* 🎨 **Custom Discord embeds** — color-coded messages based on your performance
-* 🔧 **Simple setup** — works out of the box with minimal configuration
+* **Automatic Tosu management** — downloads and keeps the `tosu` binary up to date
+* **Real-time osu! data** — reads your current PP and beatmap info live from the game
+* **Custom Discord embeds** — color-coded messages based on your performance
+* **Simple setup** — works out of the box with minimal configuration
 
 ---
 
-## 📦 Installation
+## Installation
 
 1. Clone this repository:
 
@@ -37,7 +37,9 @@
 
 ---
 
-## ▶️ Usage
+# In the future, I will make an installer so maybe this will be easy to install.
+
+## Usage
 
 Run the app:
 
@@ -53,7 +55,7 @@ Once running, `ppsend` will automatically:
 
 ---
 
-## 💡 Tip: Launch with osu!
+## Tip: Launch with osu!
 
 To make it seamless, you can **add `npm run start` to your osu! shortcut** so both osu! and `ppsend` start together.
 
@@ -67,7 +69,7 @@ You can then set this shortcut to run before or alongside osu! to keep your PP u
 
 ---
 
-## ⚙️ Dependencies
+## Dependencies
 
 | Package                                                  | Description                           |
 | -------------------------------------------------------- | ------------------------------------- |
@@ -80,7 +82,7 @@ You can then set this shortcut to run before or alongside osu! to keep your PP u
 
 ---
 
-## 🧾 License
+## License
 
 This project is licensed under the **MIT License**.
-[`tosu!`](https://github.com/tosuapp/tosu) is © 2023–2025 Mikhail Babynichev (LGPL-3.0 licensed).
+[`tosu`](https://github.com/tosuapp/tosu) is © 2023–2025 Mikhail Babynichev (LGPL-3.0 licensed).
