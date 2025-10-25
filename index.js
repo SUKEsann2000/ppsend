@@ -1,9 +1,13 @@
 // Import required modules
 const WebSocket = require("ws");
 const fetch = (...args) => import('node-fetch').then(({default: f}) => f(...args));
-const dotenv = require("dotenv");
-dotenv.config();
+//const dotenv = require("dotenv");
+//dotenv.config();
 const { start } = require("child_process");
+const path = require("path");
+
+const envPath = path.join(__dirname, '.env');
+require('dotenv').config({ path: envPath });
 
 // Counter for WebSocket connection attempts
 let wscount = 0;
