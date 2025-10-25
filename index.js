@@ -6,9 +6,7 @@ const fetch = (...args) => import('node-fetch').then(({default: f}) => f(...args
 const { start } = require("./tosuStart.js");
 const path = require("path");
 const fs = require("fs");
-if (false) {
-  const AdmZip = require("adm-zip")
-}
+const AdmZip = require("adm-zip")
 
 const envPath = path.join(__dirname, '.env');
 if (fs.existsSync(envPath)) {
