@@ -82,7 +82,7 @@ async function getLatest() {
     return name;
 }
 
-export default async function start() {
+async function start() {
     const version = await getLatest().catch((e) => {
         console.error(`Error happened:\n${e}`);
     });
@@ -120,3 +120,5 @@ export default async function start() {
         child.on("exit", (code) => reject(new Error(`Tosu exited early with code ${code}`)));
     });
 }
+
+module.exports = { start };
