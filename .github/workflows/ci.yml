@@ -18,13 +18,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'npm'  # devDependencies 内の nexe もここでキャッシュされる
+          cache: 'npm'
 
-      # 3. npm 依存関係インストール
+      # 3. 依存関係を再インストール（adm-zip → unzipper に置き換え）
       - name: Install npm dependencies
-        run: npm ci --force
+        run: |
+          npm uninstall adm-zip || true
+          npm install unzipper
+          npm ci --force
 
-      # 4. nexe キャッシュ (Node ソースのダウンロード高速化)
+      # 4. nexe キャッシュ
       - name: Cache nexe node source
         uses: actions/cache@v4
         with:
@@ -33,11 +36,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nexe-node-
 
-      # 5. exe ビルド (npx を使ってローカル nexe を実行)
+      # 5. exe ビルド
       - name: Build executable with nexe
-        run: npx nexe index.js -o app.exe --build -j 4 \
-              --resource "./node_modules/adm-zip/**" \
-              -r ws -r node-fetch
+        run: npx nexe index.js -o app.exe --build -j 4 -r ws -r node-fetch
 
       # 6. ビルド成果物アップロード
       - name: Upload built binary
@@ -45,6 +46,7 @@ jobs:
         with:
           name: app-exe
           path: app.exe
+
   run:
     needs: build
     runs-on: windows-latest
