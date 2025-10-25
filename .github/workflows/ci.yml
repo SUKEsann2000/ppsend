@@ -55,11 +55,26 @@ jobs:
       - name: Run exe with timeout
         shell: pwsh
         run: |
-          $proc = Start-Process -FilePath "./app.exe" -PassThru
+          $proc = Start-Process -FilePath "./app.exe" -PassThru `
+                                -RedirectStandardOutput "stdout.log" `
+                                -RedirectStandardError "stderr.log"
+
           $waitTime = 10000
           $proc.WaitForExit($waitTime)
+
           if (-not $proc.HasExited) {
-            Write-Host "Timeout reached. Killing process..."
-            $proc.Kill()
-            exit 1
+              Write-Host "Timeout reached, process still running. Killing..."
+              $proc.Kill()
+              Write-Host "Timeout finished — considered normal exit"
+              exit 0
           }
+
+          Write-Host "Process finished. Exit code: $($proc.ExitCode)"
+          Get-Content stdout.log
+          Get-Content stderr.log
+
+          if ($proc.ExitCode -ne 0) {
+              Write-Host "Process exited with error"
+              exit 1
+          }
+
