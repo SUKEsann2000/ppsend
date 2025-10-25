@@ -1,8 +1,9 @@
 // Import required modules
-import WebSocket from "ws";
-import fetch from "node-fetch";
-import "dotenv/config";
-import start from "./tosuStart.js";
+const WebSocket = require("ws");
+const fetch = (...args) => import('node-fetch').then(({default: f}) => f(...args));
+const dotenv = require("dotenv");
+dotenv.config();
+const { start } = require("child_process");
 
 // Counter for WebSocket connection attempts
 let wscount = 0;
@@ -55,7 +56,7 @@ const connectWS = () =>
     tryConnect();
   });
 
-tosuWS = await connectWS();
+tosuWS = connectWS();
 
 // This event listener is registered only once to handle messages from tosu!
 tosuWS.on("message", async (msg) => {

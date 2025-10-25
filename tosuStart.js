@@ -1,9 +1,9 @@
-import fs from "fs";
-import { spawn, execSync } from "child_process";
-import path from "path";
-import os from "os";
-import fetch from "node-fetch"; // npm install node-fetch
-import extract from "extract-zip";
+const fs = require("fs");
+const { spawn, execSync } = require("child_process");
+const path = require("path");
+const os = require("os");
+const fetch = (...args) => import('node-fetch').then(({default: f}) => f(...args));
+const extract = require("extract-zip");
 
 const system = os.type();
 
