@@ -43,3 +43,23 @@ jobs:
         with:
           name: app-exe
           path: app.exe
+  run:
+    needs: build
+    runs-on: windows-latest
+    steps:
+      - name: Download built binary
+        uses: actions/download-artifact@v4
+        with:
+          name: app-exe
+
+      - name: Run exe with timeout
+        shell: pwsh
+        run: |
+          $proc = Start-Process -FilePath "./app.exe" -PassThru
+          $waitTime = 10000
+          $proc.WaitForExit($waitTime)
+          if (-not $proc.HasExited) {
+            Write-Host "Timeout reached. Killing process..."
+            $proc.Kill()
+            exit 1
+          }
