@@ -59,7 +59,7 @@ jobs:
                                 -RedirectStandardOutput "stdout.log" `
                                 -RedirectStandardError "stderr.log"
 
-          $waitTime = 10000
+          $waitTime = 60000
           $proc.WaitForExit($waitTime)
 
           if (-not $proc.HasExited) {
