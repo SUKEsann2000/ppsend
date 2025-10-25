@@ -21,7 +21,7 @@ jobs:
         run: npm ci
 
       - name: Build executable with nexe
-        run: npx nexe index.js -o app.exe
+        run: npx nexe index.js -o app.exe --build
 
       - name: Upload built binary
         uses: actions/upload-artifact@v4
