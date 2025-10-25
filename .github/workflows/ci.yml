@@ -22,7 +22,7 @@ jobs:
 
       # 3. npm 依存関係インストール
       - name: Install npm dependencies
-        run: npm ci
+        run: npm ci --force
 
       # 4. nexe キャッシュ (Node ソースのダウンロード高速化)
       - name: Cache nexe node source
