@@ -7,13 +7,6 @@ import extract from "extract-zip";
 
 const system = os.type();
 
-// Only Windows(sry) Get Version Of A File
-function getFileVersion(exePath) {
-    const cmd = `powershell -Command "(Get-Item '${exePath}').VersionInfo.FileVersion"`;
-    const ver = execSync(cmd, { encoding: "utf8" }).trim();
-    return ver.split(".").slice(0, 3).join("."); // major.minor.patch まで
-}
-
 async function getLatest() {
     const res = await fetch("https://api.github.com/repos/tosuapp/tosu/releases/latest", {
         headers: { "User-Agent": "node.js" }
