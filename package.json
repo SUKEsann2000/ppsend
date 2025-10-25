@@ -12,8 +12,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "debug": "^4.4.3",
-    "extract-zip": "^2.0.1",
+    "adm-zip": "^0.5.16",
     "fs": "^0.0.1-security",
     "node-fetch": "^3.3.2",
     "path": "^0.12.7",

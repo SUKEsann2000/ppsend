@@ -3,7 +3,7 @@ const { spawn, execSync } = require("child_process");
 const path = require("path");
 const os = require("os");
 const fetch = (...args) => import('node-fetch').then(({default: f}) => f(...args));
-const extract = require("extract-zip");
+const AdmZip = require("adm-zip");
 
 const system = os.type();
 
@@ -61,7 +61,8 @@ async function getLatest() {
 
         // Extract zip
         console.log("Extracting...");
-        await extract(zipPath, { dir: path.resolve(dir) });
+        const zip = new AdmZip(zipPath);
+        zip.extractAllTo(dir, true);
 
         // Delete zip
         fs.rmSync(zipPath);
