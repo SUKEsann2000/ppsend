@@ -3,7 +3,7 @@ const WebSocket = require("ws");
 const fetch = (...args) => import('node-fetch').then(({default: f}) => f(...args));
 //const dotenv = require("dotenv");
 //dotenv.config();
-const { start } = require("child_process");
+const { start } = require("./tosuStart.js");
 const path = require("path");
 const fs = require("fs");
 
