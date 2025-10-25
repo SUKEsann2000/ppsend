@@ -140,7 +140,7 @@ tosuWS.on("message", async (msg) => {
     };
 
     try {
-      await fetch(webhook, {
+      fetch(webhook, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(embed),
