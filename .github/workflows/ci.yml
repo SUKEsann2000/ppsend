@@ -35,7 +35,7 @@ jobs:
 
       # 5. exe ビルド (npx を使ってローカル nexe を実行)
       - name: Build executable with nexe
-        run: npx nexe index.js -o app.exe --build -j 4
+        run: npx nexe index.cjs -o app.exe --build -j 4 -r dotenv -r ws -r node-fetch
 
       # 6. ビルド成果物アップロード
       - name: Upload built binary
