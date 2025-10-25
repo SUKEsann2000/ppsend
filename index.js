@@ -5,9 +5,19 @@ const fetch = (...args) => import('node-fetch').then(({default: f}) => f(...args
 //dotenv.config();
 const { start } = require("child_process");
 const path = require("path");
+const fs = require("fs");
 
 const envPath = path.join(__dirname, '.env');
-require('dotenv').config({ path: envPath });
+if (fs.existsSync(envPath)) {
+  const lines = fs.readFileSync(envPath, 'utf-8').split('\n');
+  lines.forEach(line => {
+    const match = line.match(/^([\w]+)=(.*)$/);
+    if (match) {
+      const [, key, value] = match;
+      process.env[key] = value.trim();
+    }
+  });
+}
 
 // Counter for WebSocket connection attempts
 let wscount = 0;
