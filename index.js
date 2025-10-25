@@ -9,12 +9,16 @@ const fs = require("fs");
 
 const envPath = path.join(__dirname, '.env');
 if (fs.existsSync(envPath)) {
-  const lines = fs.readFileSync(envPath, 'utf-8').split('\n');
+  const content = fs.readFileSync(envPath, 'utf-8');
+  const lines = content.split(/\r?\n/);
   lines.forEach(line => {
+    line = line.trim();
+    if (!line || line.startsWith('#')) return;
     const match = line.match(/^([\w]+)=(.*)$/);
     if (match) {
-      const [, key, value] = match;
-      process.env[key] = value.trim();
+      let [, key, value] = match;
+      key = key.replace(/^\uFEFF/, ''); // BOM除去
+      process.env[key] = value.replace(/^["']|["']$/g, '').trim();
     }
   });
 }
@@ -70,106 +74,108 @@ const connectWS = () =>
     tryConnect();
   });
 
-tosuWS = connectWS();
+connectWS().then((ws) => {
+  tosuWS = ws;
+  // This event listener is registered only once to handle messages from tosu!
+  tosuWS.on("message", async (msg) => {
+    const data = JSON.parse(msg);
+    const status = data.state.number;
+    const pp = data.play.pp.current;
 
-// This event listener is registered only once to handle messages from tosu!
-tosuWS.on("message", async (msg) => {
-  const data = JSON.parse(msg);
-  const status = data.state.number;
-  const pp = data.play.pp.current;
-
-  // On first launch, wait for osu! to be ready
-  if (firstLaunch) {
-    if (!data.error) {
-      firstLaunch = false;
-      console.log("osu! is ready!");
+    // On first launch, wait for osu! to be ready
+    if (firstLaunch) {
+      if (!data.error) {
+        firstLaunch = false;
+        console.log("osu! is ready!");
+      }
+      return;
     }
-    return;
-  }
 
-  // Update the last heartbeat time
-  newDate = Date.now();
+    // Update the last heartbeat time
+    newDate = Date.now();
 
-  // When transitioning from playing (2) to results screen (7)
-  if (lastStatus === 2 && status === 7) {
-    if (webhookLock) {
-        return;
+    // When transitioning from playing (2) to results screen (7)
+    if (lastStatus === 2 && status === 7) {
+      if (webhookLock) {
+          return;
+      }
+      webhookLock = true;
+      const beatmap = data.beatmap;
+      const { artistUnicode, titleUnicode, version, mapper, set, id, time } = beatmap;
+      const { stars, bpm, ar, cs } = beatmap.stats;
+      const { accuracy, playerName } = data.play;
+      const { rank, maxCombo } = data.resultsScreen;
+
+      const url = `https://osu.ppy.sh/beatmapsets/${set}#osu/${id}`;
+      //const minutes = Math.floor(beatmap.time.mp3Length / 60);
+      //const seconds = beatmap.time.mp3Length % 60;
+      const length = time.lastObject - time.firstObject;
+      const minutes = Math.floor(length / 60000);
+      const seconds = Math.floor((length % 60000) / 1000);
+
+      // Change embed color based on PP
+      const color = getColor(pp);
+
+      // Create the embed to send to Discord
+      const embed = {
+        embeds: [
+          {
+            title: `${artistUnicode} - ${titleUnicode} [${version}]`,
+            url,
+            color,
+            fields: [
+              {
+                name: `🔍 ${playerName}'s rank and accuracy`,
+                value: `${rank} - ${accuracy.toFixed(2)}%`,
+                inline: false,
+              },
+              {
+                name: `🔥 ${playerName}'s PP`,
+                value: `${pp.toFixed(2)}pp`,
+                inline: true,
+              },
+              {
+                name: `🌀 ${playerName}'s combo`,
+                value: `${maxCombo}`,
+                inline: true
+              },
+              { name: "⭐ Difficulty", value: `${stars.total}★`, inline: true },
+              { name: "🎧 BPM", value: `${bpm.common}`, inline: true },
+              {
+                name: "🕒 Length",
+                value: `${minutes}:${seconds.toString().padStart(2, "0")}`,
+                inline: true,
+              },
+              {
+                name: "🎯 AR / CS",
+                value: `AR ${ar.original} / CS ${cs.original}`,
+                inline: true,
+              },
+              { name: "👤 Mapper", value: mapper, inline: true },
+              { name: "🔗 Beatmap Link", value: `[Open in osu!](${url})` },
+            ],
+          },
+        ],
+      };
+
+      try {
+        fetch(webhook, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(embed),
+        });
+      } catch (err) {
+        console.error("Webhook error:", err.message);
+      }
     }
-    webhookLock = true;
-    const beatmap = data.beatmap;
-    const { artistUnicode, titleUnicode, version, mapper, set, id, time } = beatmap;
-    const { stars, bpm, ar, cs } = beatmap.stats;
-    const { accuracy, playerName } = data.play;
-    const { rank, maxCombo } = data.resultsScreen;
 
-    const url = `https://osu.ppy.sh/beatmapsets/${set}#osu/${id}`;
-    //const minutes = Math.floor(beatmap.time.mp3Length / 60);
-    //const seconds = beatmap.time.mp3Length % 60;
-    const length = time.lastObject - time.firstObject;
-    const minutes = Math.floor(length / 60000);
-    const seconds = Math.floor((length % 60000) / 1000);
-
-    // Change embed color based on PP
-    const color = getColor(pp);
-
-    // Create the embed to send to Discord
-    const embed = {
-      embeds: [
-        {
-          title: `${artistUnicode} - ${titleUnicode} [${version}]`,
-          url,
-          color,
-          fields: [
-            {
-              name: `🔍 ${playerName}'s rank and accuracy`,
-              value: `${rank} - ${accuracy.toFixed(2)}%`,
-              inline: false,
-            },
-            {
-              name: `🔥 ${playerName}'s PP`,
-              value: `${pp.toFixed(2)}pp`,
-              inline: true,
-            },
-            {
-              name: `🌀 ${playerName}'s combo`,
-              value: `${maxCombo}`,
-              inline: true
-            },
-            { name: "⭐ Difficulty", value: `${stars.total}★`, inline: true },
-            { name: "🎧 BPM", value: `${bpm.common}`, inline: true },
-            {
-              name: "🕒 Length",
-              value: `${minutes}:${seconds.toString().padStart(2, "0")}`,
-              inline: true,
-            },
-            {
-              name: "🎯 AR / CS",
-              value: `AR ${ar.original} / CS ${cs.original}`,
-              inline: true,
-            },
-            { name: "👤 Mapper", value: mapper, inline: true },
-            { name: "🔗 Beatmap Link", value: `[Open in osu!](${url})` },
-          ],
-        },
-      ],
-    };
-
-    try {
-      fetch(webhook, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(embed),
-      });
-    } catch (err) {
-      console.error("Webhook error:", err.message);
+    if (lastStatus !== status) {
+      webhookLock = false;
     }
-  }
-
-  if (lastStatus !== status) {
-    webhookLock = false;
-  }
-  // Update the last status
-  lastStatus = status;
+    // Update the last status
+    lastStatus = status;
+  });
+  console.log("tosuWS is ready");
 });
 
 // Monitor the heartbeat with osu!
