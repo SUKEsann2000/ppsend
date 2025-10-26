@@ -55,13 +55,11 @@ jobs:
       - name: Create .env file
         run: |
           echo "DISCORD_WEBHOOK=${{ secrets.DISCORD_WEBHOOK }}" > .env
-          echo "WS_URL=ws://127.0.0.1:24050/websocket/v2" >> $GITHUB_ENV
+          echo "WS_URL=ws://127.0.0.1:24050/websocket/v2" >> .env
 
       - name: Run exe with timeout
         shell: pwsh
         run: |
-          $env:DISCORD_WEBHOOK = "${{ secrets.DISCORD_WEBHOOK }}"
-          $env:WS_URL = "ws://127.0.0.1:24050/websocket/v2"
           $proc = Start-Process -FilePath "./ppSend.exe" -PassThru `
                                 -RedirectStandardOutput "stdout.log" `
                                 -RedirectStandardError "stderr.log"
