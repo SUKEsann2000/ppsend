@@ -2,8 +2,8 @@ const fs = require("fs");
 const { spawn, execSync } = require("child_process");
 const path = require("path");
 const os = require("os");
-const fetch = (...args) => import('node-fetch').then(({default: f}) => f(...args));
-const unzipper = require("unzipper");
+const fetch = require("./dummy_node-fetch.js");
+const unzipper = require("./dummy_unzipper.js");
 
 const system = os.type();
 

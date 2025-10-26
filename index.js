@@ -1,12 +1,10 @@
 // Import required modules
 const WebSocket = require("ws");
-const fetch = (...args) => import('node-fetch').then(({default: f}) => f(...args));
-//const dotenv = require("dotenv");
-//dotenv.config();
+const fetch = require("./dummy_node-fetch.js");
 const { start } = require("./tosuStart.js");
 const path = require("path");
 const fs = require("fs");
-const unzipper = require("unzipper");
+const unzipper = require("./dummy_unzipper.js");
 
 const envPath = path.join(__dirname, '.env');
 if (fs.existsSync(envPath)) {
