@@ -2,8 +2,7 @@ const fs = require("fs");
 const { spawn, execSync } = require("child_process");
 const path = require("path");
 const os = require("os");
-const fetch = require("./dummy_node-fetch.js");
-const unzipper = require("./dummy_unzipper.js");
+const unzipper = require("unzipper");
 
 const system = os.type();
 
