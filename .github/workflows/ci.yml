@@ -62,7 +62,8 @@ jobs:
         run: |
           $proc = Start-Process -FilePath "./ppSend.exe" -PassThru `
                                 -RedirectStandardOutput "stdout.log" `
-                                -RedirectStandardError "stderr.log"
+                                -RedirectStandardError "stderr.log" `
+                                -WorkingDirectory "$PWD"
 
           $waitTime = 60000
           $proc.WaitForExit($waitTime)
