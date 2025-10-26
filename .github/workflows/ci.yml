@@ -55,12 +55,17 @@ jobs:
       - name: Run exe with timeout
         shell: pwsh
         run: |
-          $env:DISCORD_WEBHOOK = "${{ secrets.DISCORD_WEBHOOK }}"
-          $env:WS_URL = "ws://127.0.0.1:24050/websocket/v2"
-          $proc = Start-Process -FilePath "./ppSend.exe" -PassThru `
-                                -RedirectStandardOutput "stdout.log" `
-                                -RedirectStandardError "stderr.log"
+          $envs = @{
+            DISCORD_WEBHOOK = "***"
+            WS_URL = "ws://127.0.0.1:24050/websocket/v2"
+          }
 
+          $proc = Start-Process -FilePath "./ppSend.exe" `
+                                -PassThru `
+                                -RedirectStandardOutput "stdout.log" `
+                                -RedirectStandardError "stderr.log" `
+                                -Environment $envs
+          
           $waitTime = 60000
           $proc.WaitForExit($waitTime)
 
