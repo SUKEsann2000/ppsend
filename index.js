@@ -22,7 +22,7 @@ if (fs.existsSync(envPath)) {
 }
 
 console.log("WS_URL: ", process.env.WS_URL);
-if (!process.env.WS_URL || process.env.WS_URL.length === 0) {
+if (!process.env.WS_URL || !process.env.WS_URL.startsWith("ws://")) {
   process.env.WS_URL = "ws://127.0.0.1:24050/websocket/v2";
 }
 
