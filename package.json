@@ -12,10 +12,13 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "unzipper": "^0.12.3",
+    "extract-zip": "^2.0.1",
     "ws": "^8.18.3"
   },
   "volta": {
     "node": "22.21.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.11"
   }
 }

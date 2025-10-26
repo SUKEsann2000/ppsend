@@ -3,7 +3,7 @@ const WebSocket = require("ws");
 const { start } = require("./tosuStart.js");
 const path = require("path");
 const fs = require("fs");
-const unzipper = require("unzipper");
+const unzipper = require("extract-zip");
 
 const envPath = path.join(__dirname, '.env');
 if (fs.existsSync(envPath)) {

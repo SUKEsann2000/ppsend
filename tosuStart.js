@@ -2,7 +2,7 @@ const fs = require("fs");
 const { spawn, execSync } = require("child_process");
 const path = require("path");
 const os = require("os");
-const unzipper = require("unzipper");
+const unzipper = require("extract-zip");
 
 const system = os.type();
 
@@ -60,9 +60,7 @@ async function getLatest() {
 
         // Extract zip
         console.log("Extracting...");
-        fs.createReadStream(zipPath)
-          .pipe(unzipper.Extract({ path: dir }))
-          .on("close", () => console.log("Extracted!"));
+        await unzipper(zipPath, { dir: path.resolve(dir) });
 
         // Delete zip
         fs.rmSync(zipPath);
