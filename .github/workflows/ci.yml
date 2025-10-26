@@ -24,28 +24,21 @@ jobs:
       - name: Install npm dependencies
         run: npm ci --force
 
-      # 4. nexe キャッシュ
-      - name: Cache nexe node source
-        uses: actions/cache@v4
-        with:
-          path: C:\Users\runneradmin\.nexe
-          key: ${{ runner.os }}-nexe-node-22
-          restore-keys: |
-            ${{ runner.os }}-nexe-node-
+      - name: Execute bundle.js
+        run: node bundle.js
 
-      # 5. exe ビルド
-      - name: Build executable with nexe
-        run: npx nexe index.js -o app.exe --build -j 4 `
-              -r ws `
-              --resource "./node_modules/unzipper/**/*" `
-              --resource "./node_modules/node-fetch/**/*"
+      - name: Inject Node.js
+        run: node -e "require('fs').copyFileSync(process.execPath, 'dist/ppSend.exe')"
+
+      - name: Inject app
+        run: npx postject dist/ppSend.exe NODE_SEA_BLOB dist/blob.blob --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2
 
       # 6. ビルド成果物アップロード
       - name: Upload built binary
         uses: actions/upload-artifact@v4
         with:
-          name: app-exe
-          path: app.exe
+          name: ppSend-exe
+          path: dist/ppSend.exe
 
   run:
     needs: build
@@ -54,7 +47,7 @@ jobs:
       - name: Download built binary
         uses: actions/download-artifact@v4
         with:
-          name: app-exe
+          name: ppSend-exe
 
       - name: Use variables
         run: |
@@ -64,7 +57,7 @@ jobs:
       - name: Run exe with timeout
         shell: pwsh
         run: |
-          $proc = Start-Process -FilePath "./app.exe" -PassThru `
+          $proc = Start-Process -FilePath "./ppSend.exe" -PassThru `
                                 -RedirectStandardOutput "stdout.log" `
                                 -RedirectStandardError "stderr.log"
 
