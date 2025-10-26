@@ -56,6 +56,11 @@ jobs:
         with:
           name: app-exe
 
+      - name: Use variables
+        run: |
+          echo "DISCORD_WEBHOOK=${{ secrets.DISCORD_WEBHOOK }}" >> $GITHUB_ENV
+          echo "WS_URL=ws://127.0.0.1:24050/websocket/v2" >> $GITHUB_ENV
+
       - name: Run exe with timeout
         shell: pwsh
         run: |
