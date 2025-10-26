@@ -22,10 +22,7 @@ jobs:
 
       # 3. 依存関係を再インストール（adm-zip → unzipper に置き換え）
       - name: Install npm dependencies
-        run: |
-          npm uninstall adm-zip || true
-          npm install unzipper
-          npm ci --force
+        run: npm ci --force
 
       # 4. nexe キャッシュ
       - name: Cache nexe node source
