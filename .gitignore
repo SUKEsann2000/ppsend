@@ -2,3 +2,7 @@ node_modules
 .env
 
 Tosu/*
+!Tosu/.gitkeep
+
+dist/*
+!dist/.gitkeep
