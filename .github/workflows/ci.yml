@@ -27,6 +27,9 @@ jobs:
       - name: Execute bundle.js
         run: node bundle.js
 
+      - name: Create blob.blob
+        run: node --experimental-sea-config sea-config.json
+
       - name: Inject Node.js
         run: node -e "require('fs').copyFileSync(process.execPath, 'dist/ppSend.exe')"
 
