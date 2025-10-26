@@ -1,1 +1,0 @@
-module.exports = (...args) => import('unzipper').then(({default: u}) => u(...args));
