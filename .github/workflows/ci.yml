@@ -35,7 +35,10 @@ jobs:
 
       # 5. exe ビルド
       - name: Build executable with nexe
-        run: npx nexe index.js -o app.exe --build -j 4 -r ws -r node-fetch -r unzipper --log-level verbos
+        run: npx nexe index.js -o app.exe --build -j 4 `
+              -r ws `
+              --resource "./node_modules/unzipper/**/*" `
+              --resource "./node_modules/node-fetch/**/*"
 
       # 6. ビルド成果物アップロード
       - name: Upload built binary
