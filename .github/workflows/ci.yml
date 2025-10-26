@@ -56,6 +56,12 @@ jobs:
         run: |
           echo "DISCORD_WEBHOOK=${{ secrets.DISCORD_WEBHOOK }}" > .env
           echo "WS_URL=ws://127.0.0.1:24050/websocket/v2" >> .env
+          if (Test-Path ".env") {
+              Write-Host ".env file created"
+          } else {
+              Write-Host "Failed to create .env file"
+              exit 1
+          }
 
       - name: Run exe with timeout
         shell: pwsh
