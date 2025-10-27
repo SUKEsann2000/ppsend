@@ -1,35 +1,19 @@
 // Import required modules
 const WebSocket = require("ws");
-const { start } = require("./tosuStart.js");
 const path = require("path");
 const fs = require("fs");
 const unzipper = require("extract-zip");
+const readline = require("readline");
 
-// set envs
-const envs = {};
-const envPath = path.join(__dirname, ".env");
+const { start } = require("./tosuStart.js");
+const { checkEnv } = require("./checkEnv.js");
 
-if (fs.existsSync(envPath)) {
-  const content = fs.readFileSync(envPath, "utf-8");
-  const lines = content.split(/\r?\n/);
-  lines.forEach(line => {
-    line = line.trim();
-    if (!line || line.startsWith("#")) return;
-    const match = line.match(/^([\w]+)=(.*)$/);
-    if (match) {
-      let [, key, value] = match;
-      key = key.replace(/^\uFEFF/, ""); // Remove BOM
-      envs[key] = value.replace(/^["']|["']$/g, "").trim();
-    }
-  });
-}
+// check debug mode
+const debugMode = process.argv.includes("--ppSendDebug");
 
-// set default value
-if (!envs.WS_URL || !envs.WS_URL.startsWith("ws://")) {
-  envs.WS_URL = "ws://127.0.0.1:24050/websocket/v2";
-}
+// setEnvs
 
-console.log("WS_URL:", envs.WS_URL);
+const envs = await checkEnv(debugMode);
 
 let wscount = 0;
 const tosuPath = "./Tosu/tosu.exe";
@@ -44,6 +28,8 @@ let lastStatus = 0;
 let tosuWS;
 let webhookLock = false;
 
+let connectFlag = false;
+
 const connectWS = () =>
   new Promise((resolve) => {
     const tryConnect = () => {
@@ -56,7 +42,7 @@ const connectWS = () =>
       });
 
       ws.on("error", (err) => {
-        console.error("WebSocket error:", err.message);
+        if (connectFlag) console.error("WebSocket error:", err.message);
         ws.removeAllListeners();
         wscount--;
         setTimeout(tryConnect, 1000);
