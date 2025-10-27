@@ -87,10 +87,13 @@ async function start() {
     });
 
     const dir = "./Tosu/";
-    const exeFullPath = path.resolve(dir, `tosu-${version}.exe`)
+    const tosuFullPath = 
+        system === "Windows_NT"
+            ? path.join(dir, `tosu-${version}.exe`)
+            : path.join(dir, `tosu-${version}`);
     const cwd = path.resolve(dir);
 
-    if (!exeFullPath) {
+    if (!tosuFullPath || !fs.existsSync(tosuFullPath)) {
         console.error("Executable path not found. Aborting.");
         return;
     }
@@ -98,7 +101,7 @@ async function start() {
     console.log(`Executable exists. Version: ${version}. Ready to run.`);
 
     return new Promise((resolveStart, reject) => {
-        const child = spawn(exeFullPath, [], {
+        const child = spawn(tosuFullPath, [], {
             cwd,
             windowsHide: true,
             stdio: ["ignore", "pipe", "pipe"]
