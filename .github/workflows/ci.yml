@@ -1,11 +1,11 @@
-name: Windows
+name: Build
 
 on:
   push:
     branches: [main]
 
 jobs:
-  build:
+  windows-build:
     runs-on: windows-latest
 
     steps:
@@ -43,8 +43,8 @@ jobs:
           name: ppSend-exe
           path: dist/ppSend.exe
 
-  run:
-    needs: build
+  windows-run:
+    needs: windows-build
     runs-on: windows-latest
     steps:
       - name: Download built binary
