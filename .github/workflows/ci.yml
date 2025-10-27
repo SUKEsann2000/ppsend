@@ -19,7 +19,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci --force
+        run: npm ci
 
       - name: Execute
         shell: bash
@@ -48,7 +48,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci --force
+        run: npm ci
 
       - name: Execute bundle.js
         run: node bundle.js
@@ -105,7 +105,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci --force
+        run: npm ci
 
       - name: Execute
         shell: pwsh
@@ -152,7 +152,7 @@ jobs:
 
       # 3. 依存関係を再インストール（adm-zip → unzipper に置き換え）
       - name: Install npm dependencies
-        run: npm ci --force
+        run: npm ci
 
       - name: Execute bundle.js
         run: node bundle.js
