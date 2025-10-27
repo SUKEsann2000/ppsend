@@ -15,20 +15,11 @@
 
 ## Installation
 
-1. Clone this repository:
+1. Download latest one from releases:
 
-   ```bash
-   git clone https://github.com/yourname/ppsend.git
-   cd ppsend
-   ```
+   release page is [here](https://github.com/SUKEsann2000/ppsend/releases/latest)
 
-2. Install dependencies:
-
-   ```bash
-   npm install
-   ```
-
-3. Rename `.env.template` to `.env` or Create a `.env` file in the project root:
+2. Edit a `.env` file in the project root(`.env` file will create after running):
 
    ```bash
    DISCORD_WEBHOOK=https://discord.com/api/webhooks/xxxxx/yyyyy
@@ -37,15 +28,9 @@
 
 ---
 
-# In the future, I will make an installer so maybe this will be easy to install.
-
 ## Usage
 
-Run the app:
-
-```bash
-npm run start
-```
+Run the app(e.g. ppsend.exe)
 
 Once running, `ppsend` will automatically:
 
@@ -79,6 +64,7 @@ You can then set this shortcut to run before or alongside osu! to keep your PP u
 | [node-fetch](https://www.npmjs.com/package/node-fetch)   | Fetch API for Node.js                 |
 | [path](https://www.npmjs.com/package/path)               | Path handling (Node built-in)         |
 | [ws](https://www.npmjs.com/package/ws)                   | WebSocket client for Tosu             |
+| [ESBuild](https://www.npmjs.com/package/esbuild)         | Bundle JS files for making SEA        |
 
 ---
 
