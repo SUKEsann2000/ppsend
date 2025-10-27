@@ -25,7 +25,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          timeout 30s npm run start
+          timeout 30s npm run start -- --ppSendDebug
           exit_code=$?
           if [ $exit_code -eq 124 ]; then
             echo "Timeout reached (30s), treating as success."
@@ -83,7 +83,7 @@ jobs:
         run: |
           chmod +x ./ppSend
           set +e
-          timeout 60s ./ppSend
+          timeout 60s ./ppSend --ppSendDebug
           exit_code=$?
           if [ $exit_code -eq 124 ]; then
             echo "Timeout reached (60s), treating as success."
@@ -110,7 +110,7 @@ jobs:
       - name: Execute
         shell: pwsh
         run: |
-          $proc = Start-Process -FilePath "npm.cmd" -ArgumentList "run", "start" -PassThru `
+          $proc = Start-Process -FilePath "npm.cmd" -ArgumentList "run", "start", "--ppSendDebug" -PassThru `
                                 -RedirectStandardOutput "stdout.log" `
                                 -RedirectStandardError "stderr.log" `
                                 -WorkingDirectory "$PWD"
@@ -185,7 +185,7 @@ jobs:
       - name: Run exe with timeout
         shell: pwsh
         run: |
-          $proc = Start-Process -FilePath "./ppSend.exe" -PassThru `
+          $proc = Start-Process -FilePath "./ppSend.exe" -ArgumentList "--ppSendDebug" -PassThru `
                                 -RedirectStandardOutput "stdout.log" `
                                 -RedirectStandardError "stderr.log" `
                                 -WorkingDirectory "$PWD"
