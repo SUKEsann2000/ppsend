@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 jobs:
-  run-directly:
+  linux-run-directly:
     runs-on: ubuntu-latest
     
     steps:
@@ -33,8 +33,110 @@ jobs:
           fi
           exit $exit_code
 
+  linux-build:
+    runs-on: ubuntu-latest
+    needs: linux-run-directly
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --force
+
+      - name: Execute bundle.js
+        run: node bundle.js
+
+      - name: Create blob.blob
+        run: node --experimental-sea-config sea-config.json
+
+      - name: Inject Node.js
+        run: node -e "require('fs').copyFileSync(process.execPath, 'dist/ppSend')"
+
+      - name: Inject app
+        run: npx postject dist/ppSend NODE_SEA_BLOB dist/blob.blob --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2
+
+      - name: Upload built binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: ppSend-Linux
+          path: dist/ppSend
+
+  linux-run:
+    needs: linux-build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download built binary
+        uses: actions/download-artifact@v4
+        with:
+          name: ppSend-Linux
+
+      - name: Run binary with timeout
+        shell: bash
+        run: |
+          chmod +x ./ppSend
+          set +e
+          timeout 60s ./ppSend
+          exit_code=$?
+          if [ $exit_code -eq 124 ]; then
+            echo "Timeout reached (60s), treating as success."
+            exit 0
+          fi
+          exit $exit_code
+
+  windows-run-directly:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --force
+
+      - name: Execute
+        shell: pwsh
+        run: |
+          $proc = Start-Process -FilePath "npm" -ArgumentList "run", "start" -PassThru `
+                                -RedirectStandardOutput "stdout.log" `
+                                -RedirectStandardError "stderr.log" `
+                                -WorkingDirectory "$PWD"
+
+          $waitTime = 30000
+          $proc.WaitForExit($waitTime)
+
+          if (-not $proc.HasExited) {
+              Write-Host "Timeout reached (30s), process still running. Killing..."
+              $proc.Kill()
+              Write-Host "Timeout finished — considered normal exit"
+              exit 0
+          }
+
+          Write-Host "Process finished. Exit code: $($proc.ExitCode)"
+          Get-Content stdout.log
+          Get-Content stderr.log
+
+          if ($proc.ExitCode -ne 0) {
+              Write-Host "Process exited with error"
+              exit 1
+          }
+
   windows-build:
     runs-on: windows-latest
+    needs: windows-run-directly
 
     steps:
       # 1. リポジトリチェックアウト
@@ -68,7 +170,7 @@ jobs:
       - name: Upload built binary
         uses: actions/upload-artifact@v4
         with:
-          name: ppSend-exe
+          name: ppSend-Windows
           path: dist/ppSend.exe
 
   windows-run:
@@ -78,7 +180,7 @@ jobs:
       - name: Download built binary
         uses: actions/download-artifact@v4
         with:
-          name: ppSend-exe
+          name: ppSend-Windows
 
       - name: Run exe with timeout
         shell: pwsh
