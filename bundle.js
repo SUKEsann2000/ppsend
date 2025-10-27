@@ -8,6 +8,7 @@ esbuild.build({
   outfile: 'dist/bundle.js', 
   sourcemap: false,
   minify: false,
+  format: 'cjs',
   define: {
     'process.env.WS_URL': JSON.stringify(process.env.WS_URL || ''),
     'process.env.DISCORD_WEBHOOK': JSON.stringify(process.env.DISCORD_WEBHOOK || ''),

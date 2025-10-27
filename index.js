@@ -11,151 +11,154 @@ const { checkEnv } = require("./checkEnv.js");
 // check debug mode
 const debugMode = process.argv.includes("--ppSendDebug");
 
-// setEnvs
+(async () => {
 
-const envs = await checkEnv(debugMode);
+  // setEnvs
+  const envs = await checkEnv(debugMode);
 
-let wscount = 0;
-const tosuPath = "./Tosu/tosu.exe";
-start(tosuPath);
-console.log("Tosu was started!");
+  let wscount = 0;
+  const tosuPath = "./Tosu/tosu.exe";
+  start(tosuPath);
+  console.log("Tosu was started!");
 
-const webhook = envs.DISCORD_WEBHOOK;
+  const webhook = envs.DISCORD_WEBHOOK;
 
-let newDate = Date.now();
-let firstLaunch = true;
-let lastStatus = 0;
-let tosuWS;
-let webhookLock = false;
+  let newDate = Date.now();
+  let firstLaunch = true;
+  let lastStatus = 0;
+  let tosuWS;
+  let webhookLock = false;
 
-let connectFlag = false;
+  let connectFlag = false;
 
-const connectWS = () =>
-  new Promise((resolve) => {
-    const tryConnect = () => {
-      const ws = new WebSocket(envs.WS_URL);
-      wscount++;
+  const connectWS = () =>
+    new Promise((resolve) => {
+      const tryConnect = () => {
+        const ws = new WebSocket(envs.WS_URL);
+        wscount++;
 
-      ws.on("open", () => {
-        console.log("WebSocket connected!");
-        resolve(ws);
-      });
-
-      ws.on("error", (err) => {
-        if (connectFlag) console.error("WebSocket error:", err.message);
-        ws.removeAllListeners();
-        wscount--;
-        setTimeout(tryConnect, 1000);
-      });
-
-      ws.on("close", () => {
-        ws.removeAllListeners();
-        wscount--;
-        console.log("WebSocket closed. Reconnecting...");
-        setTimeout(tryConnect, 1000);
-      });
-    };
-    tryConnect();
-  });
-
-connectWS().then((ws) => {
-  tosuWS = ws;
-  tosuWS.on("message", async (msg) => {
-    const data = JSON.parse(msg);
-    const status = data.state.number;
-    const pp = data.play.pp.current;
-
-    if (firstLaunch) {
-      if (!data.error) {
-        firstLaunch = false;
-        console.log("osu! is ready!");
-      }
-      return;
-    }
-
-    newDate = Date.now();
-
-    if (lastStatus === 2 && status === 7) {
-      if (webhookLock) return;
-      webhookLock = true;
-
-      const beatmap = data.beatmap;
-      const { artistUnicode, titleUnicode, version, mapper, set, id, time } = beatmap;
-      const { stars, bpm, ar, cs } = beatmap.stats;
-      const { accuracy, playerName } = data.play;
-      const { rank, maxCombo } = data.resultsScreen;
-
-      const url = `https://osu.ppy.sh/beatmapsets/${set}#osu/${id}`;
-      const length = time.lastObject - time.firstObject;
-      const minutes = Math.floor(length / 60000);
-      const seconds = Math.floor((length % 60000) / 1000);
-
-      const color = getColor(pp);
-
-      const embed = {
-        embeds: [
-          {
-            title: `${artistUnicode} - ${titleUnicode} [${version}]`,
-            url,
-            color,
-            fields: [
-              {
-                name: `🔍 ${playerName}'s rank and accuracy`,
-                value: `${rank} - ${accuracy.toFixed(2)}%`,
-                inline: false,
-              },
-              {
-                name: `🔥 ${playerName}'s PP`,
-                value: `${pp.toFixed(2)}pp`,
-                inline: true,
-              },
-              {
-                name: `🌀 ${playerName}'s combo`,
-                value: `${maxCombo}`,
-                inline: true,
-              },
-              { name: "⭐ Difficulty", value: `${stars.total}★`, inline: true },
-              { name: "🎧 BPM", value: `${bpm.common}`, inline: true },
-              {
-                name: "🕒 Length",
-                value: `${minutes}:${seconds.toString().padStart(2, "0")}`,
-                inline: true,
-              },
-              {
-                name: "🎯 AR / CS",
-                value: `AR ${ar.original} / CS ${cs.original}`,
-                inline: true,
-              },
-              { name: "👤 Mapper", value: mapper, inline: true },
-              { name: "🔗 Beatmap Link", value: `[Open in osu!](${url})` },
-            ],
-          },
-        ],
-      };
-
-      try {
-        fetch(webhook, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(embed),
+        ws.on("open", () => {
+          console.log("WebSocket connected!");
+          resolve(ws);
         });
-      } catch (err) {
-        console.error("Webhook error:", err.message);
+
+        ws.on("error", (err) => {
+          if (connectFlag) console.error("WebSocket error:", err.message);
+          ws.removeAllListeners();
+          wscount--;
+          setTimeout(tryConnect, 1000);
+        });
+
+        ws.on("close", () => {
+          ws.removeAllListeners();
+          wscount--;
+          console.log("WebSocket closed. Reconnecting...");
+          setTimeout(tryConnect, 1000);
+        });
+      };
+      tryConnect();
+    });
+
+  connectWS().then((ws) => {
+    tosuWS = ws;
+    tosuWS.on("message", async (msg) => {
+      const data = JSON.parse(msg);
+      const status = data.state.number;
+      const pp = data.play.pp.current;
+
+      if (firstLaunch) {
+        if (!data.error) {
+          firstLaunch = false;
+          console.log("osu! is ready!");
+        }
+        return;
       }
-    }
 
-    if (lastStatus !== status) webhookLock = false;
-    lastStatus = status;
+      newDate = Date.now();
+
+      if (lastStatus === 2 && status === 7) {
+        if (webhookLock) return;
+        webhookLock = true;
+
+        const beatmap = data.beatmap;
+        const { artistUnicode, titleUnicode, version, mapper, set, id, time } = beatmap;
+        const { stars, bpm, ar, cs } = beatmap.stats;
+        const { accuracy, playerName } = data.play;
+        const { rank, maxCombo } = data.resultsScreen;
+
+        const url = `https://osu.ppy.sh/beatmapsets/${set}#osu/${id}`;
+        const length = time.lastObject - time.firstObject;
+        const minutes = Math.floor(length / 60000);
+        const seconds = Math.floor((length % 60000) / 1000);
+
+        const color = getColor(pp);
+
+        const embed = {
+          embeds: [
+            {
+              title: `${artistUnicode} - ${titleUnicode} [${version}]`,
+              url,
+              color,
+              fields: [
+                {
+                  name: `🔍 ${playerName}'s rank and accuracy`,
+                  value: `${rank} - ${accuracy.toFixed(2)}%`,
+                  inline: false,
+                },
+                {
+                  name: `🔥 ${playerName}'s PP`,
+                  value: `${pp.toFixed(2)}pp`,
+                  inline: true,
+                },
+                {
+                  name: `🌀 ${playerName}'s combo`,
+                  value: `${maxCombo}`,
+                  inline: true,
+                },
+                { name: "⭐ Difficulty", value: `${stars.total}★`, inline: true },
+                { name: "🎧 BPM", value: `${bpm.common}`, inline: true },
+                {
+                  name: "🕒 Length",
+                  value: `${minutes}:${seconds.toString().padStart(2, "0")}`,
+                  inline: true,
+                },
+                {
+                  name: "🎯 AR / CS",
+                  value: `AR ${ar.original} / CS ${cs.original}`,
+                  inline: true,
+                },
+                { name: "👤 Mapper", value: mapper, inline: true },
+                { name: "🔗 Beatmap Link", value: `[Open in osu!](${url})` },
+              ],
+            },
+          ],
+        };
+
+        try {
+          fetch(webhook, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(embed),
+          });
+        } catch (err) {
+          console.error("Webhook error:", err.message);
+        }
+      }
+
+      if (lastStatus !== status) webhookLock = false;
+      lastStatus = status;
+    });
+    console.log("tosuWS is ready");
   });
-  console.log("tosuWS is ready");
-});
 
-setInterval(() => {
-  if (Date.now() - newDate >= 5000 && !firstLaunch) {
-    console.log("Cannot HeartBeat to osu!");
-    process.exit(1);
-  }
-}, 1000);
+  setInterval(() => {
+    if (Date.now() - newDate >= 5000 && !firstLaunch) {
+      console.log("Cannot HeartBeat to osu!");
+      process.exit(1);
+    }
+  }, 1000);
+
+})();
 
 function getColor(pp) {
   if (pp < 5) return 0x0000ff;

@@ -26,7 +26,7 @@ async function checkEnv(debugMode = false) {
         });
     } else {
         if (!debugMode) {
-            fs.writeFileSync(envPath, "WS_URL=127.0.0.1:24050\nDISCORD_WEBHOOK=<Your WebHook URL Here>\n", "utf-8");
+            fs.writeFileSync(envPath, "WS_URL=ws://127.0.0.1:24050\nDISCORD_WEBHOOK=<Your WebHook URL Here>\n", "utf-8");
             console.log(".env file created. Please configure it and restart the application.");
             console.log("Please press enter to quit...");
             const rl = readline.createInterface({
