@@ -110,7 +110,7 @@ jobs:
       - name: Execute
         shell: pwsh
         run: |
-          $proc = Start-Process -FilePath "npm" -ArgumentList "run", "start" -PassThru `
+          $proc = Start-Process -FilePath "npm.cmd" -ArgumentList "run", "start" -PassThru `
                                 -RedirectStandardOutput "stdout.log" `
                                 -RedirectStandardError "stderr.log" `
                                 -WorkingDirectory "$PWD"
