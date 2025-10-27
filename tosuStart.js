@@ -86,7 +86,7 @@ async function start() {
         console.error(`Error happened:\n${e}`);
     });
 
-    const dir = "./Tosu/";
+    const dir = path.join(__dirname, "./Tosu/");
     const tosuFullPath = 
         system === "Windows_NT"
             ? path.join(dir, `tosu-${version}.exe`)
