@@ -5,6 +5,25 @@ on:
     branches: [main]
 
 jobs:
+  run-directly:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --force
+
+      - name: Execute
+        run: timeout 30s npm run start || true
+
   windows-build:
     runs-on: windows-latest
 
