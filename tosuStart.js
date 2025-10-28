@@ -99,9 +99,13 @@ async function start() {
     }
 
     console.log(`Executable exists. Version: ${version}. Ready to run.`);
+    
+    const shell = os.platform() === "win32" ? "cmd.exe" : "/bin/sh";
 
     return new Promise((resolveStart, reject) => {
         const child = spawn(tosuFullPath, [], {
+            env: {OPEN_DASHBOARD_ON_STARTUP: false},
+            shell,
             cwd,
             windowsHide: true,
             stdio: ["ignore", "pipe", "pipe"]
