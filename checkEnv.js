@@ -3,6 +3,7 @@ const fs = require("fs");
 const readline = require("readline");
 
 async function checkEnv(debugMode = false) {
+    console.log("checkEnv.js");
     if (debugMode) {
         console.log("------- Debug Mode Enabled ------");
         console.log("Debug mode is ON. Skipping .env creation.")
