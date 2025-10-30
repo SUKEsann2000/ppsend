@@ -7,7 +7,7 @@ $stderrLog = "$workingDir\stderr.log"
 Remove-Item $stdoutLog, $stderrLog -ErrorAction SilentlyContinue
 
 $startInfo = New-Object System.Diagnostics.ProcessStartInfo
-$startInfo.FileName = "npm.cmd"
+$startInfo.FileName = "npm"
 $startInfo.Arguments = "run start -- --ppSendDebug"
 $startInfo.WorkingDirectory = $workingDir
 $startInfo.RedirectStandardOutput = $true
