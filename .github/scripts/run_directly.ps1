@@ -15,26 +15,10 @@ $startInfo.RedirectStandardError  = $true
 $startInfo.UseShellExecute = $false
 $startInfo.CreateNoWindow = $true
 
-$proc = New-Object System.Diagnostics.Process
-$proc.StartInfo = $startInfo
+$proc = [System.Diagnostics.Process]::Start($startInfo)
 
-$stdOutWriter = [System.IO.StreamWriter]::new($stdoutLog, $true)
-$stdErrWriter = [System.IO.StreamWriter]::new($stderrLog, $true)
-
-# イベントは Start 前に登録する
-$proc.add_OutputDataReceived({
-    param($sender, $args)
-    if ($args.Data) { $stdOutWriter.WriteLine($args.Data) }
-})
-
-$proc.add_ErrorDataReceived({
-    param($sender, $args)
-    if ($args.Data) { $stdErrWriter.WriteLine($args.Data) }
-})
-
-$proc.Start() | Out-Null
-$proc.BeginOutputReadLine()
-$proc.BeginErrorReadLine()
+$stdout = $proc.StandardOutput.ReadToEnd()
+$stderr = $proc.StandardError.ReadToEnd()
 
 if (-not $proc.WaitForExit($waitTime)) {
     Write-Host "Timeout reached ($($waitTime/1000)s), killing process..."
@@ -42,10 +26,8 @@ if (-not $proc.WaitForExit($waitTime)) {
     $proc.WaitForExit()
 }
 
-# 少し待って出力flush
-Start-Sleep -Milliseconds 200
-$stdOutWriter.Close()
-$stdErrWriter.Close()
+$stdout | Out-File -FilePath $stdoutLog -Encoding utf8
+$stderr | Out-File -FilePath $stderrLog -Encoding utf8
 
 Write-Host "Process finished. Exit code: $($proc.ExitCode)"
 
