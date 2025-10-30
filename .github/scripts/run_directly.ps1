@@ -7,8 +7,8 @@ $stderrLog = "$workingDir\stderr.log"
 Remove-Item $stdoutLog, $stderrLog -ErrorAction SilentlyContinue
 
 $startInfo = New-Object System.Diagnostics.ProcessStartInfo
-$startInfo.FileName = "npm"
-$startInfo.Arguments = "run start -- --ppSendDebug"
+$startInfo.FileName = "node"
+$startInfo.Arguments = "index.js --ppSendDebug"
 $startInfo.WorkingDirectory = $workingDir
 $startInfo.RedirectStandardOutput = $true
 $startInfo.RedirectStandardError  = $true
