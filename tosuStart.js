@@ -72,6 +72,35 @@ async function getLatest() {
                 : path.join(dir, "tosu");
         fs.renameSync(downloadedPath, expectedExePath);
 
+        // make .env for tosu
+        const envContent = {
+            DEBUG_LOG: false,
+            ENABLE_AUTOUPDATE: false,
+            OPEN_DASHBOARD_ON_STARTUP: false,
+
+            SHOW_MP_COMMANDS: false,
+            CALCULATE_PP: true,
+
+            ENABLE_KEY_OVERLAY: false,
+            ENABLE_INGAME_OVERLAY: false,
+
+            POLL_RATE: 100,
+            PRECISE_DATA_POLL_RATE: 10,
+
+            INGAME_OVERLAY_KEYBIND: "Control + Shift + Space",
+            INGAME_OVERLAY_MAX_FPS: 60,
+
+            SERVER_IP: "127.0.0.1",
+            SERVER_PORT: 24050,
+            ALLOWED_IPS: "127.0.0.1,localhost,absolute",
+
+            STATIC_FOLDER_PATH: "./static",
+        }
+
+        for (const [key, value] of Object.entries(envContent)) {
+            fs.appendFileSync(path.join(dir, "tosu.env"), `${key}=${value}\n`);
+        }
+
         console.log("Installation complete.");
     } else {
         console.log("Latest Tosu already installed.");
@@ -99,13 +128,9 @@ async function start() {
     }
 
     console.log(`Executable exists. Version: ${version}. Ready to run.`);
-    
-    const shell = system === "Windows_NT" ? "cmd.exe" : "/bin/sh";
 
     return new Promise((resolveStart, reject) => {
         const child = spawn(tosuFullPath, [], {
-            env: {OPEN_DASHBOARD_ON_STARTUP: false},
-            shell,
             cwd,
             windowsHide: true,
             stdio: ["ignore", "pipe", "pipe"]
