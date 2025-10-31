@@ -50,8 +50,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Execute bundle.js
-        run: node bundle.js
+      - name: Execute bundler.js
+        run: node bundler.js
 
       - name: Create blob.blob
         run: node --experimental-sea-config sea-config.json
@@ -117,23 +117,20 @@ jobs:
     needs: windows-run-directly
 
     steps:
-      # 1. リポジトリチェックアウト
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Node.js セットアップ + npm キャッシュ
       - name: Set up Node.js and cache npm
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: 'npm'
 
-      # 3. 依存関係を再インストール（adm-zip → unzipper に置き換え）
       - name: Install npm dependencies
         run: npm ci
 
-      - name: Execute bundle.js
-        run: node bundle.js
+      - name: Execute bundler.js
+        run: node bundler.js
 
       - name: Create blob.blob
         run: node --experimental-sea-config sea-config.json
@@ -144,7 +141,6 @@ jobs:
       - name: Inject app
         run: npx postject dist/ppSend.exe NODE_SEA_BLOB dist/blob.blob --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2
 
-      # 6. ビルド成果物アップロード
       - name: Upload built binary
         uses: actions/upload-artifact@v4
         with:

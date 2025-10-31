@@ -1,5 +1,5 @@
 {
-  "main": "dist/bundle.js",
+  "main": "dist/bundled.js",
   "output": "dist/blob.blob",
   "disableExperimentalSEAWarning": true,
   "useSnapshot": false,
