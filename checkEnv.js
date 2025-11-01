@@ -31,6 +31,7 @@ async function checkEnv(debugMode = false) {
             log("INFO", ".env file created. Please configure it and restart the application.");
             log("INFO", "Please close this and edit .env");
             process.stdin.resume();
+            await new Promise(() => {});
         } else {
             envs.WS_URL = "ws://127.0.0.1:24050/websocket/v2";
         }
