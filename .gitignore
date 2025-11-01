@@ -8,3 +8,4 @@ dist/*
 !dist/.gitkeep
 
 ppSend.log
+ppSend.lock

@@ -8,11 +8,13 @@ const readline = require("readline");
 const { start } = require("./tosuStart.js");
 const { checkEnv } = require("./checkEnv.js");
 const { log } = require("./log.js");
+const { createLockFile } = require("./lock.js");
 
 // check debug mode
 const debugMode = process.argv.includes("--ppSendDebug");
 
 (async () => {
+  createLockFile();
 
   // setEnvs
   const envs = await checkEnv(debugMode);
