@@ -136,6 +136,18 @@ async function start() {
             stdio: ["ignore", "pipe", "pipe"]
         });
 
+        const cleanup = () => {
+            try {
+                child.kill();
+            } catch (e) {
+                console.error("Error during cleanup:", e);
+            }
+        }
+
+        process.on("exit", cleanup);
+        process.on("SIGINT", cleanup);
+        process.on("SIGTERM", cleanup);
+
         child.stdout.on("data", (data) => {
             const line = data.toString();
             if (line.includes("osu! is ready")) {
