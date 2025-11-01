@@ -25,6 +25,11 @@ async function checkEnv(debugMode = false) {
             envs[key] = value.replace(/^["']|["']$/g, "").trim();
         }
         });
+
+        if (!envs.DISCORD_WEBHOOK.match(/\bhttps?:\/\/(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?:\/[^\s]*)?\b/)) {
+            log("ERROR", "DISCORD_WEBHOOK is not set correctly in .env. Please fix it.");
+            process.exit(1);
+        }
     } else {
         if (!debugMode) {
             fs.writeFileSync(envPath, "WS_URL=ws://127.0.0.1:24050\nDISCORD_WEBHOOK=<Your WebHook URL Here>\n", "utf-8");
