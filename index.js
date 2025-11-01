@@ -14,6 +14,10 @@ const { createLockFile } = require("./lock.js");
 const debugMode = process.argv.includes("--ppSendDebug");
 
 (async () => {
+  log("INFO", "------- ppSend Started ------");
+  log("INFO", "WHEN YOU SEE ANY ERRORS, PLEASE CHECK ppSend.log");
+  log("INFO", "YOU CAN ALSO OPEN GitHub ISSUES");
+  log("INFO", "-----------------------------");
   createLockFile();
 
   // setEnvs
