@@ -24,6 +24,7 @@ async function getLatest() {
         log("INFO", "No latest Tosu found. Cleaning old files...");
         if (fs.existsSync(dir)) {
             for (const file of fs.readdirSync(dir)) {
+                if (file === ".gitkeep") continue;
                 fs.rmSync(path.join(dir, file), { recursive: true, force: true });
             }
         } else {
