@@ -6,3 +6,5 @@ Tosu/*
 
 dist/*
 !dist/.gitkeep
+
+ppSend.log

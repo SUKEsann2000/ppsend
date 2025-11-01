@@ -7,6 +7,7 @@ const readline = require("readline");
 
 const { start } = require("./tosuStart.js");
 const { checkEnv } = require("./checkEnv.js");
+const { log } = require("./log.js");
 
 // check debug mode
 const debugMode = process.argv.includes("--ppSendDebug");
@@ -19,7 +20,7 @@ const debugMode = process.argv.includes("--ppSendDebug");
   let wscount = 0;
   const tosuPath = "./Tosu/tosu.exe";
   start(tosuPath);
-  console.log("Tosu was started!");
+  log("INFO", "Tosu was started!");
 
   const webhook = envs.DISCORD_WEBHOOK;
 
@@ -38,12 +39,12 @@ const debugMode = process.argv.includes("--ppSendDebug");
         wscount++;
 
         ws.on("open", () => {
-          console.log("WebSocket connected!");
+          log("INFO", "WebSocket connected!");
           resolve(ws);
         });
 
         ws.on("error", (err) => {
-          if (connectFlag) console.error("WebSocket error:", err.message);
+          if (connectFlag) log("ERROR", "WebSocket error:", err.message);
           ws.removeAllListeners();
           wscount--;
           setTimeout(tryConnect, 1000);
@@ -52,7 +53,7 @@ const debugMode = process.argv.includes("--ppSendDebug");
         ws.on("close", () => {
           ws.removeAllListeners();
           wscount--;
-          console.log("WebSocket closed. Reconnecting...");
+          log("WARN", "WebSocket closed. Reconnecting...");
           setTimeout(tryConnect, 1000);
         });
       };
@@ -69,7 +70,7 @@ const debugMode = process.argv.includes("--ppSendDebug");
       if (firstLaunch) {
         if (!data.error) {
           firstLaunch = false;
-          console.log("osu! is ready!");
+          log("INFO", "osu! is ready!");
         }
         return;
       }
@@ -141,19 +142,19 @@ const debugMode = process.argv.includes("--ppSendDebug");
             body: JSON.stringify(embed),
           });
         } catch (err) {
-          console.error("Webhook error:", err.message);
+          log("ERROR", "Webhook error:", err.message);
         }
       }
 
       if (lastStatus !== status) webhookLock = false;
       lastStatus = status;
     });
-    console.log("tosuWS is ready");
+    log("INFO", "tosuWS is ready");
   });
 
   setInterval(() => {
     if (Date.now() - newDate >= 5000 && !firstLaunch) {
-      console.log("Cannot HeartBeat to osu!");
+      log("ERROR", "Cannot HeartBeat to osu!");
       process.exit(1);
     }
   }, 1000);

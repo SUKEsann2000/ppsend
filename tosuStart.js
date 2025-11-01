@@ -3,6 +3,7 @@ const { spawn, execSync } = require("child_process");
 const path = require("path");
 const os = require("os");
 const unzipper = require("extract-zip");
+const { log } = require("./log");
 
 const system = os.type();
 
@@ -20,7 +21,7 @@ async function getLatest() {
 
     // If there are no latest
     if (!fs.existsSync(expectedExePath)) {
-        console.log("No latest Tosu found. Cleaning old files...");
+        log("INFO", "No latest Tosu found. Cleaning old files...");
         if (fs.existsSync(dir)) {
             for (const file of fs.readdirSync(dir)) {
                 fs.rmSync(path.join(dir, file), { recursive: true, force: true });
@@ -29,7 +30,7 @@ async function getLatest() {
             fs.mkdirSync(dir, { recursive: true });
         }
 
-        console.log("Installing latest Tosu...");
+        log("INFO", "Installing latest Tosu...");
 
         // Select .zip
         let asset;
@@ -42,12 +43,12 @@ async function getLatest() {
                 a.name.toLowerCase().includes("linux") && a.name.endsWith(".zip")
             );
         } else {
-            console.error("Unsupported OS for automatic download.");
+            log("ERROR", "Unsupported OS for automatic download.");
             process.exit(1);
         }
 
         if (!asset) {
-            console.error("No suitable ZIP asset found for download.");
+            log("ERROR", "No suitable ZIP asset found for download.");
             process.exit(1);
         }
 
@@ -56,10 +57,10 @@ async function getLatest() {
         const zipPath = path.join(dir, asset.name);
         const buffer = Buffer.from(await assetRes.arrayBuffer());
         fs.writeFileSync(zipPath, buffer);
-        console.log(`Downloaded: ${zipPath}`);
+        log("INFO", `Downloaded: ${zipPath}`);
 
         // Extract zip
-        console.log("Extracting...");
+        log("INFO", "Extracting...");
         await unzipper(zipPath, { dir: path.resolve(dir) });
 
         // Delete zip
@@ -101,9 +102,9 @@ async function getLatest() {
             fs.appendFileSync(path.join(dir, "tosu.env"), `${key}=${value}\n`);
         }
 
-        console.log("Installation complete.");
+        log("INFO", "Installation complete.");
     } else {
-        console.log("Latest Tosu already installed.");
+        log("INFO", "Latest Tosu already installed.");
     }
 
     // Return object
@@ -112,7 +113,7 @@ async function getLatest() {
 
 async function start() {
     const version = await getLatest().catch((e) => {
-        console.error(`Error happened:\n${e}`);
+        log("ERROR", `Error happened:\n${e}`);
     });
 
     const dir = path.join(__dirname, "./Tosu/");
@@ -123,11 +124,11 @@ async function start() {
     const cwd = path.resolve(dir);
 
     if (!tosuFullPath || !fs.existsSync(tosuFullPath)) {
-        console.error("Executable path not found. Aborting.");
+        log("ERROR", "Executable path not found. Aborting.");
         return;
     }
 
-    console.log(`Executable exists. Version: ${version}. Ready to run.`);
+    log("INFO", `Executable exists. Version: ${version}. Ready to run.`);
 
     return new Promise((resolveStart, reject) => {
         const child = spawn(tosuFullPath, [], {
@@ -140,7 +141,7 @@ async function start() {
             try {
                 child.kill();
             } catch (e) {
-                console.error("Error during cleanup:", e);
+                log("ERROR", "Error during cleanup:", e);
             }
         }
 
@@ -156,7 +157,7 @@ async function start() {
         });
 
         child.stderr.on("data", (data) => {
-            console.error("[tosu stderr]", data.toString());
+            log("[tosu stderr]", data.toString());
         });
 
         child.on("error", (err) => reject(err));
