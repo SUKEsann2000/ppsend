@@ -147,6 +147,7 @@ const debugMode = process.argv.includes("--ppSendDebug");
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(embed),
           });
+          log("INFO", `Sent webhook for ${playerName}'s play on ${titleUnicode} [${version}]`);
         } catch (err) {
           log("ERROR", "Webhook error:", err.message);
         }
