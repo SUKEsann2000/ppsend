@@ -9,6 +9,7 @@ esbuild.build({
   sourcemap: false,
   minify: false,
   format: 'cjs',
+  external: ['node:*'],
   define: {
     'process.env.WS_URL': JSON.stringify(process.env.WS_URL || ''),
     'process.env.DISCORD_WEBHOOK': JSON.stringify(process.env.DISCORD_WEBHOOK || ''),
