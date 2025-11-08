@@ -87,6 +87,13 @@ const debugMode = process.argv.includes("--ppSendDebug");
         if (webhookLock) return;
         webhookLock = true;
 
+        if (pp < envs.PPLIMIT) {
+          log("INFO", `Play pp ${pp.toFixed(2)} is below the limit ${envs.PPLIMIT}. Skipping webhook.`);
+          if (lastStatus !== status) webhookLock = false;
+          lastStatus = status;
+          return;
+        }
+
         const beatmap = data.beatmap;
         const { artistUnicode, titleUnicode, version, mapper, set, id, time } = beatmap;
         const { stars, bpm, ar, cs } = beatmap.stats;
